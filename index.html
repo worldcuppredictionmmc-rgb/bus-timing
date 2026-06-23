@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mary Matha Bus Timings</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563EB">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --blue:#2563EB;--blue-light:#EFF6FF;--blue-mid:#BFDBFE;--blue-dark:#1D4ED8;
+    --green:#16A34A;--green-light:#F0FDF4;--green-mid:#BBF7D0;
+    --orange:#EA580C;--orange-light:#FFF7ED;
+    --purple:#7C3AED;--purple-light:#F5F3FF;
+    --gray-50:#F8FAFC;--gray-100:#F1F5F9;--gray-200:#E2E8F0;--gray-300:#CBD5E1;
+    --gray-400:#94A3B8;--gray-500:#64748B;--gray-600:#475569;--gray-700:#334155;
+    --gray-900:#0F172A;
+    --radius-sm:10px;--radius-md:16px;--radius-lg:22px;
+    --shadow-sm:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md:0 4px 16px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.04);
+  }
+  body{
+  font-family:'Plus Jakarta Sans',sans-serif;background:#fff;color:var(--gray-900);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .app{max-width:430px;margin:0 auto;background:#fff;min-height:600px;position:relative;display:flex;flex-direction:column;border:1px solid var(--gray-200);border-radius:24px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.12)}
+  .page{flex:1;overflow-y:auto;padding-bottom:72px}
+  .hdr{background:#fff;padding:16px 20px 14px;border-bottom:1px solid var(--gray-100);position:sticky;top:0;z-index:10}
+  .hdr-row{display:flex;align-items:center;gap:10px}
+  .hdr-icon{width:38px;height:38px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center}
+  .hdr-title{font-family:'Outfit',sans-serif;font-size:17px;font-weight:800;color:var(--gray-900);line-height:1.1}
+  .hdr-sub{font-size:11px;color:var(--gray-400);margin-top:1px}
+  .hdr-back{width:34px;height:34px;border:1.5px solid var(--gray-200);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff}
+  .hdr-back svg{width:16px;height:16px;stroke:var(--gray-700);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .hdr-star{width:34px;height:34px;border:1.5px solid var(--gray-200);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;margin-left:auto}
+  .section-label{font-size:12px;font-weight:600;color:var(--gray-400);letter-spacing:0.06em;text-transform:uppercase;margin:20px 20px 10px}
+  .route-card{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);margin:0 20px 10px;cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow-sm)}
+  .route-card:hover,.route-card:active{border-color:var(--blue);background:var(--blue-light);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+  .route-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .route-name{font-size:14px;font-weight:600;color:var(--gray-900);flex:1}
+  .route-sub{font-size:12px;color:var(--gray-400);margin-top:1px}
+  .chevron{width:18px;height:18px;color:var(--gray-300)}
+  .next-card{margin:0 20px 12px;background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 100%);border-radius:var(--radius-lg);padding:18px 20px;color:#fff;box-shadow:0 6px 24px rgba(37,99,235,0.3)}
+  .next-label{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;opacity:0.75;margin-bottom:6px}
+  .next-route{font-size:12px;opacity:0.8;margin-bottom:12px}
+  .next-bus-info{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+  .next-type-badge{font-size:11px;font-weight:600;background:rgba(255,255,255,0.2);padding:3px 8px;border-radius:6px;display:inline-block;margin-bottom:4px}
+  .next-name{font-size:13px;font-weight:500;opacity:0.9}
+  .next-time{font-family:'Outfit',sans-serif;font-size:34px;font-weight:800;line-height:1}
+  .next-arr{font-size:12px;opacity:0.7;margin-top:3px}
+  .next-countdown{text-align:right}
+  .countdown-num{font-family:'Outfit',sans-serif;font-size:22px;font-weight:800}
+  .countdown-sub{font-size:11px;opacity:0.7}
+  .reach-card{margin:0 20px 12px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--radius-md);padding:16px}
+  .reach-title{font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:12px}
+  .reach-input-row{display:flex;align-items:center;gap:10px}
+  .reach-input{flex:1;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--gray-900);background:#fff;outline:none}
+  .reach-input:focus{border-color:var(--blue)}
+  .reach-result{margin-top:12px;padding:10px 12px;background:var(--green-light);border:1.5px solid var(--green-mid);border-radius:var(--radius-sm);display:flex;align-items:center;gap:8px}
+  .reach-result.warn{background:#FFF7ED;border-color:#FED7AA}
+  .reach-check{width:20px;height:20px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .reach-check.warn-icon{background:#EA580C}
+  .reach-result-text{font-size:13px;font-weight:500;color:#15803D}
+  .reach-result-text.warn-text{color:#C2410C}
+  .bnav{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--gray-100);display:flex;z-index:10}
+  .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0 12px;cursor:pointer;gap:4px;color:var(--gray-400);font-size:11px;font-weight:500;transition:color 0.15s}
+  .bnav-item.active{color:var(--blue)}
+  .bnav-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+  .bus-list{padding:0 20px}
+  .bus-card{padding:14px 16px;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);margin-bottom:10px;background:#fff;box-shadow:var(--shadow-sm);position:relative}
+  .bus-card.next-bus{border-color:var(--green);background:var(--green-light)}
+  .next-badge{position:absolute;top:-1px;right:14px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:0 0 8px 8px;letter-spacing:0.04em}
+  .bus-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+  .bus-time{font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;color:var(--gray-900)}
+  .bus-type-pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.03em}
+  .bus-type-pill.ksrtc{background:var(--blue-light);color:var(--blue-dark)}
+  .bus-type-pill.private{background:var(--green-light);color:#166534}
+  .bus-name{font-size:14px;font-weight:600;color:var(--gray-700)}
+  .bus-details{font-size:12px;color:var(--gray-400);margin-top:3px}
+  .bus-arr{font-size:12px;font-weight:500;color:var(--gray-500);margin-top:6px;display:flex;align-items:center;gap:5px}
+  .fav-card{display:flex;align-items:center;gap:12px;padding:16px;background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius-md);margin:0 20px 10px;box-shadow:var(--shadow-sm)}
+  .fav-remove{width:28px;height:28px;border:1.5px solid var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:auto;flex-shrink:0}
+  .fav-next{font-size:12px;color:var(--gray-400);margin-top:2px}
+  .about-inner{padding:20px}
+  .about-hero{background:var(--blue-light);border-radius:var(--radius-lg);padding:28px 20px;text-align:center;margin-bottom:20px}
+  .about-logo{width:60px;height:60px;background:var(--blue);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+  .about-appname{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;color:var(--gray-900);line-height:1.2}
+  .about-desc{font-size:13px;color:var(--gray-500);margin-top:6px}
+  .about-heart{font-size:22px;margin-top:12px}
+  .about-made{font-size:13px;color:var(--gray-500);margin-top:4px}
+  .about-info-card{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-md);overflow:hidden;margin-bottom:16px}
+  .about-row{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--gray-200)}
+  .about-row:last-child{border-bottom:none}
+  .about-row-label{font-size:13px;color:var(--gray-500)}
+  .about-row-val{font-size:13px;font-weight:500;color:var(--gray-700)}
+  .contact-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-md);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px}
+  .empty-fav{text-align:center;padding:50px 30px;color:var(--gray-400)}
+  .empty-icon{font-size:40px;margin-bottom:12px}
+  .empty-text{font-size:14px}
+  .route-detail-hdr{padding:16px 20px;border-bottom:1px solid var(--gray-100)}
+  .rd-title{font-family:'Outfit',sans-serif;font-size:18px;font-weight:800;color:var(--gray-900)}
+  .rd-sub{font-size:12px;color:var(--gray-400);margin-top:2px}
+  .legend{display:flex;gap:14px;padding:12px 20px;background:var(--gray-50);border-bottom:1px solid var(--gray-100)}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray-500)}
+  .legend-dot{width:10px;height:10px;border-radius:50%}
+  svg.icon{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .inline-svg{display:inline-flex}
+  .star-filled path{fill:#FBBF24;stroke:#FBBF24}
+  .star-empty path{fill:none;stroke:var(--gray-300)}
+  .route-icon-0{background:#EFF6FF}
+  .route-icon-1{background:#F0FDF4}
+  .route-icon-2{background:#F5F3FF}
+  .route-icon-3{background:#FFF7ED}
+  .route-color-0{color:#2563EB}
+  .route-color-1{color:#16A34A}
+  .route-color-2{color:#7C3AED}
+  .route-color-3{color:#EA580C}
+</style>
+</head>
+<body>
+
+<h2 class="sr-only">Mary Matha College Bus Timings</h2>
+
+<div class="app" id="app">
+  <div class="page" id="pg-home"></div>
+  <nav class="bnav" id="bnav"></nav>
+</div>
+
+<script>
+const BUSES = [
+  {id:1,route:"mananthavady-college",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"06:45",arr:"07:30",via:"Via Valiyoorkavu"},
+  {id:2,route:"mananthavady-college",busName:"Green Line",busType:"Private",dept:"07:15",arr:"08:00",via:"Via Dwaraka, Valiyoorkavu"},
+  {id:3,route:"mananthavady-college",busName:"KSRTC Fast Passenger",busType:"KSRTC",dept:"07:30",arr:"08:15",via:"Via Dwaraka, Valiyoorkavu"},
+  {id:4,route:"mananthavady-college",busName:"City Motors",busType:"Private",dept:"07:45",arr:"08:30",via:"Via Dwaraka, Valiyoorkavu"},
+  {id:5,route:"mananthavady-college",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"08:00",arr:"08:45",via:"Via Valiyoorkavu"},
+  {id:6,route:"mananthavady-college",busName:"City Motors",busType:"Private",dept:"08:10",arr:"08:55",via:"Via Dwaraka, Valiyoorkavu"},
+  {id:7,route:"mananthavady-college",busName:"KSRTC Fast Passenger",busType:"KSRTC",dept:"08:25",arr:"09:10",via:"Via Dwaraka, Valiyoorkavu"},
+  {id:8,route:"mananthavady-college",busName:"Royal Travels",busType:"Private",dept:"09:00",arr:"09:45",via:"Via Valiyoorkavu"},
+  {id:9,route:"mananthavady-college",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"09:30",arr:"10:15",via:"Via Valiyoorkavu"},
+  {id:10,route:"mananthavady-college",busName:"Mananthavady Express",busType:"Private",dept:"10:00",arr:"10:45",via:"Via Dwaraka"},
+  {id:11,route:"college-mananthavady",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"15:30",arr:"16:15",via:"Via Valiyoorkavu"},
+  {id:12,route:"college-mananthavady",busName:"City Motors",busType:"Private",dept:"16:00",arr:"16:45",via:"Via Dwaraka"},
+  {id:13,route:"college-mananthavady",busName:"KSRTC Fast Passenger",busType:"KSRTC",dept:"16:30",arr:"17:10",via:"Via Dwaraka, Valiyoorkavu"},
+  {id:14,route:"college-mananthavady",busName:"Green Line",busType:"Private",dept:"17:00",arr:"17:45",via:"Via Dwaraka"},
+  {id:15,route:"college-mananthavady",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"17:30",arr:"18:15",via:"Via Valiyoorkavu"},
+  {id:16,route:"college-mananthavady",busName:"Royal Travels",busType:"Private",dept:"18:00",arr:"18:45",via:"Via Valiyoorkavu"},
+  {id:17,route:"college-mananthavady",busName:"KSRTC Express",busType:"KSRTC",dept:"18:30",arr:"19:10",via:"Via Dwaraka"},
+  {id:18,route:"kattikulam-college",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"06:30",arr:"07:15",via:"Via Mananthavady"},
+  {id:19,route:"kattikulam-college",busName:"KTC Travels",busType:"Private",dept:"07:00",arr:"07:45",via:"Direct"},
+  {id:20,route:"kattikulam-college",busName:"KSRTC Fast Passenger",busType:"KSRTC",dept:"07:30",arr:"08:10",via:"Direct"},
+  {id:21,route:"kattikulam-college",busName:"Hill Queen",busType:"Private",dept:"07:50",arr:"08:30",via:"Direct"},
+  {id:22,route:"kattikulam-college",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"08:15",arr:"09:00",via:"Via Mananthavady"},
+  {id:23,route:"kattikulam-college",busName:"KTC Travels",busType:"Private",dept:"08:45",arr:"09:25",via:"Direct"},
+  {id:24,route:"kattikulam-college",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"09:15",arr:"10:00",via:"Via Mananthavady"},
+  {id:25,route:"college-kattikulam",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"15:00",arr:"15:45",via:"Via Mananthavady"},
+  {id:26,route:"college-kattikulam",busName:"Hill Queen",busType:"Private",dept:"15:30",arr:"16:10",via:"Direct"},
+  {id:27,route:"college-kattikulam",busName:"KSRTC Fast Passenger",busType:"KSRTC",dept:"16:00",arr:"16:40",via:"Direct"},
+  {id:28,route:"college-kattikulam",busName:"KTC Travels",busType:"Private",dept:"16:30",arr:"17:10",via:"Direct"},
+  {id:29,route:"college-kattikulam",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"17:00",arr:"17:45",via:"Via Mananthavady"},
+  {id:30,route:"college-kattikulam",busName:"KTC Travels",busType:"Private",dept:"17:45",arr:"18:25",via:"Direct"},
+  {id:31,route:"college-kattikulam",busName:"KSRTC Ordinary",busType:"KSRTC",dept:"18:15",arr:"19:00",via:"Via Mananthavady"},
+];
+
+const ROUTES = [
+  {key:"mananthavady-college",label:"Mananthavady → College",short:"Mananthavady",iconCls:0},
+  {key:"college-mananthavady",label:"College → Mananthavady",short:"College",iconCls:1},
+  {key:"kattikulam-college",label:"Kattikulam → College",short:"Kattikulam",iconCls:2},
+  {key:"college-kattikulam",label:"College → Kattikulam",short:"College",iconCls:3},
+];
+
+let curPage = 'home';
+let curRoute = null;
+let colStartTime = '09:00';
+let favs = JSON.parse(localStorage.getItem('mmcbt_favs')||'[]');
+let countdownTimer = null;
+
+function saveFavs(){localStorage.setItem('mmcbt_favs',JSON.stringify(favs))}
+function isFav(rk){return favs.includes(rk)}
+function toggleFav(rk){
+  if(isFav(rk)) favs=favs.filter(f=>f!==rk);
+  else favs.push(rk);
+  saveFavs();
+}
+
+function timeToMins(t){
+  const[h,m]=t.split(':').map(Number);
+  return h*60+m;
+}
+function fmtTime(t){
+  const[h,m]=t.split(':').map(Number);
+  const ap=h>=12?'PM':'AM';
+  const h12=h%12||12;
+  return `${h12}:${m.toString().padStart(2,'0')} ${ap}`;
+}
+function getNowMins(){
+  const n=new Date();
+  return n.getHours()*60+n.getMinutes();
+}
+function getNextBus(routeKey){
+  const now=getNowMins();
+  const buses=BUSES.filter(b=>b.route===routeKey).sort((a,b)=>timeToMins(a.dept)-timeToMins(b.dept));
+  return buses.find(b=>timeToMins(b.dept)>now)||buses[0]||null;
+}
+function getCountdown(dept){
+  const now=getNowMins();
+  let diff=timeToMins(dept)-now;
+  if(diff<0) diff+=24*60;
+  return diff;
+}
+
+function busIcon(color){
+  return `<svg class="icon" viewBox="0 0 24 24" style="color:${color}"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M7 5v14M17 5v14"/><circle cx="7" cy="19" r="1" fill="currentColor"/><circle cx="17" cy="19" r="1" fill="currentColor"/></svg>`;
+}
+function starIcon(filled){
+  return `<svg class="icon ${filled?'star-filled':'star-empty'}" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function chevronIcon(){
+  return `<svg class="icon" viewBox="0 0 24 24" style="color:var(--gray-300)"><path d="M9 18l6-6-6-6"/></svg>`;
+}
+function checkIcon(warn){
+  return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+}
+
+const routeColors=['#2563EB','#16A34A','#7C3AED','#EA580C'];
+const routeBgLight=['#EFF6FF','#F0FDF4','#F5F3FF','#FFF7ED'];
+
+function renderNav(){
+  const tabs=[
+    {k:'home',label:'Home',icon:`<svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`},
+    {k:'favorites',label:'Favourites',icon:`<svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`},
+    {k:'about',label:'About',icon:`<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`}
+  ];
+  document.getElementById('bnav').innerHTML=tabs.map(t=>`<div class="bnav-item${(curPage===t.k||curPage==='route')&&t.k==='home'&&curPage==='home'?'':curPage===t.k?' active':''}" onclick="nav('${t.k}')"><div class="bnav-icon" style="color:${curPage===t.k?'var(--blue)':'var(--gray-400)'}">${t.icon}</div><span>${t.label}</span></div>`).join('');
+}
+
+function nav(pg, routeKey){
+  if(countdownTimer) clearInterval(countdownTimer);
+  curPage=pg;
+  curRoute=routeKey||null;
+  renderNav();
+  const pg_home=document.getElementById('pg-home');
+  if(pg==='home') renderHome();
+  else if(pg==='route') renderRoute(routeKey);
+  else if(pg==='favorites') renderFavs();
+  else if(pg==='about') renderAbout();
+}
+
+function renderHome(){
+  const nb=getNextBus('mananthavady-college');
+  const cdMins=nb?getCountdown(nb.dept):0;
+  const colMins=timeToMins(colStartTime);
+  const busesBefore=BUSES.filter(b=>b.route==='mananthavady-college'&&timeToMins(b.dept)<colMins);
+  const canReach=busesBefore.length>0;
+
+  document.getElementById('pg-home').innerHTML=`
+    <div class="hdr">
+      <div class="hdr-row">
+        <div class="hdr-icon">${busIcon('#fff')}</div>
+        <div>
+          <div class="hdr-title">College Bus Timings</div>
+          <div class="hdr-sub">Plan your journey, reach on time</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Select Your Route</div>
+    ${ROUTES.map((r,i)=>`
+      <div class="route-card" onclick="nav('route','${r.key}')">
+        <div class="route-icon" style="background:${routeBgLight[i]}">${busIcon(routeColors[i])}</div>
+        <div style="flex:1">
+          <div class="route-name">${r.label}</div>
+          <div class="route-sub" id="nt-${r.key}">Loading...</div>
+        </div>
+        ${chevronIcon()}
+      </div>`).join('')}
+
+    ${nb?`<div class="section-label" style="margin-top:14px">Next Bus <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-400)">(Mananthavady → College)</span></div>
+    <div class="next-card" id="next-bus-card">
+      <div class="next-label">Next Departure</div>
+      <div class="next-bus-info">
+        <div>
+          <div><span class="next-type-badge">${nb.busType}</span></div>
+          <div class="next-name">${nb.busName}</div>
+          <div class="next-time" style="margin-top:6px">${fmtTime(nb.dept)}</div>
+          <div class="next-arr">Est. arrival ${fmtTime(nb.arr)}</div>
+        </div>
+        <div class="next-countdown" id="cd-home">
+          <div class="countdown-num">${cdMins}m</div>
+          <div class="countdown-sub">Arrives in</div>
+        </div>
+      </div>
+    </div>`:''}
+
+    <div class="section-label" style="margin-top:14px">Will I reach before college starts?</div>
+    <div class="reach-card">
+      <div class="reach-title">College Start Time</div>
+      <div class="reach-input-row">
+        <input class="reach-input" type="time" id="col-time" value="${colStartTime}" onchange="updateReach(this.value)">
+      </div>
+      <div class="reach-result${canReach?'':' warn'}" id="reach-result">
+        <div class="reach-check${canReach?'':' warn-icon'}">${checkIcon()}</div>
+        <div>
+          <div class="reach-result-text${canReach?'':' warn-text'}" id="reach-text">
+            ${canReach?`✓ You can reach on time`:`⚠ No buses available before ${fmtTime(colStartTime.replace(':','').length===4?colStartTime:'09:00')}`}
+          </div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:2px" id="reach-count">
+            ${canReach?`${busesBefore.length} bus${busesBefore.length!==1?'es':''} available before ${fmtTime(colStartTime)}`:''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  ROUTES.forEach(r=>{
+    const nb2=getNextBus(r.key);
+    const el=document.getElementById('nt-'+r.key);
+    if(el&&nb2) el.textContent=`Next: ${fmtTime(nb2.dept)}`;
+    else if(el) el.textContent='No upcoming buses';
+  });
+
+  startCountdown();
+}
+
+function updateReach(val){
+  colStartTime=val;
+  const colMins=timeToMins(val);
+  const buses=BUSES.filter(b=>b.route==='mananthavady-college'&&timeToMins(b.dept)<colMins);
+  const can=buses.length>0;
+  const rr=document.getElementById('reach-result');
+  const rt=document.getElementById('reach-text');
+  const rc=document.getElementById('reach-count');
+  if(!rr) return;
+  rr.className='reach-result'+(can?'':' warn');
+  rr.querySelector('.reach-check').className='reach-check'+(can?'':' warn-icon');
+  rt.className='reach-result-text'+(can?'':' warn-text');
+  rt.textContent=can?'✓ You can reach on time':'⚠ No buses available at this time';
+  rc.textContent=can?`${buses.length} bus${buses.length!==1?'es':''} available before ${fmtTime(val)}`:'';
+}
+
+function startCountdown(){
+  if(countdownTimer) clearInterval(countdownTimer);
+  countdownTimer=setInterval(()=>{
+    const nb=getNextBus('mananthavady-college');
+    const cd=document.getElementById('cd-home');
+    if(nb&&cd){
+      const mins=getCountdown(nb.dept);
+      cd.innerHTML=`<div class="countdown-num">${mins}m</div><div class="countdown-sub">Arrives in</div>`;
+    }
+  },30000);
+}
+
+function renderRoute(routeKey){
+  const route=ROUTES.find(r=>r.key===routeKey)||ROUTES[0];
+  const buses=BUSES.filter(b=>b.route===routeKey).sort((a,b)=>timeToMins(a.dept)-timeToMins(b.dept));
+  const nb=getNextBus(routeKey);
+  const fav=isFav(routeKey);
+  const idx=ROUTES.indexOf(route);
+
+  document.getElementById('pg-home').innerHTML=`
+    <div class="hdr">
+      <div class="hdr-row">
+        <div class="hdr-back" onclick="nav('home')">${`<svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>`}</div>
+        <div style="flex:1">
+          <div class="hdr-title" style="font-size:15px">${route.label}</div>
+          <div class="hdr-sub">All buses sorted by departure time</div>
+        </div>
+        <div class="hdr-star" onclick="favToggle('${routeKey}',this)" id="fav-btn">${starIcon(fav)}</div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>KSRTC</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Private</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#10B981"></div>Next Bus</div>
+    </div>
+    <div class="bus-list" style="padding-top:14px">
+      ${buses.length===0?`<div style="text-align:center;padding:40px;color:var(--gray-400)">No buses found for this route</div>`
+      :buses.map(b=>{
+        const isNext=nb&&b.id===nb.id;
+        return`<div class="bus-card${isNext?' next-bus':''}">
+          ${isNext?`<div class="next-badge">NEXT BUS</div>`:''}
+          <div class="bus-top">
+            <div>
+              <div class="bus-time">${fmtTime(b.dept)}</div>
+              <div class="bus-name" style="margin-top:2px">${b.busName}</div>
+              <div class="bus-details">${b.via}</div>
+            </div>
+            <div style="text-align:right">
+              <span class="bus-type-pill ${b.busType.toLowerCase()}">${b.busType}</span>
+              <div class="bus-arr" style="justify-content:flex-end;margin-top:8px">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${fmtTime(b.arr)}
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+  renderNav();
+  document.getElementById('bnav').querySelector('.bnav-item').classList.add('active');
+}
+
+function favToggle(rk, btn){
+  toggleFav(rk);
+  btn.innerHTML=starIcon(isFav(rk));
+}
+
+function renderFavs(){
+  document.getElementById('pg-home').innerHTML=`
+    <div class="hdr">
+      <div class="hdr-row">
+        <div class="hdr-icon" style="background:var(--blue)">${starIcon(true)}</div>
+        <div>
+          <div class="hdr-title">Favourites</div>
+          <div class="hdr-sub">Your saved routes</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding-top:14px">
+      ${favs.length===0?`<div class="empty-fav"><div class="empty-icon">⭐</div><div class="empty-text">No favourites yet.<br>Star a route to save it here.</div><div style="margin-top:20px"><button onclick="nav('home')" style="background:var(--blue);color:#fff;border:none;padding:12px 24px;border-radius:var(--radius-md);font-family:DM Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer">Browse Routes</button></div></div>`
+      :favs.map(fk=>{
+        const r=ROUTES.find(x=>x.key===fk);
+        if(!r) return '';
+        const nb=getNextBus(fk);
+        const idx=ROUTES.indexOf(r);
+        return`<div class="fav-card">
+          <div class="route-icon" style="background:${routeBgLight[idx]}">${busIcon(routeColors[idx])}</div>
+          <div style="flex:1;cursor:pointer" onclick="nav('route','${fk}')">
+            <div class="route-name" style="font-size:13px">${r.label}</div>
+            <div class="fav-next">${nb?`Next Bus: ${fmtTime(nb.dept)}`:'No upcoming buses'}</div>
+          </div>
+          <div class="fav-remove" onclick="removeFav('${fk}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function removeFav(rk){
+  favs=favs.filter(f=>f!==rk);
+  saveFavs();
+  renderFavs();
+}
+
+function renderAbout(){
+  document.getElementById('pg-home').innerHTML=`
+    <div class="hdr">
+      <div class="hdr-row">
+        <div class="hdr-icon">${busIcon('#fff')}</div>
+        <div>
+          <div class="hdr-title">About</div>
+          <div class="hdr-sub">App information</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-inner">
+      <div class="about-hero">
+        <div class="about-logo">${busIcon('#fff')}</div>
+        <div class="about-appname">Mary Matha College<br>Bus Timings</div>
+        <div class="about-desc">Created for the students of<br>Mary Matha Arts & Science College</div>
+        <div class="about-heart">❤️</div>
+        <div class="about-made">Made with love for students</div>
+      </div>
+      <div class="about-info-card">
+        <div class="about-row"><span class="about-row-label">Version</span><span class="about-row-val">1.0.0</span></div>
+        <div class="about-row"><span class="about-row-label">Last Updated</span><span class="about-row-val">18 May 2024, 8:45 AM</span></div>
+        <div class="about-row"><span class="about-row-label">Total Routes</span><span class="about-row-val">4 routes</span></div>
+        <div class="about-row"><span class="about-row-label">Total Buses</span><span class="about-row-val">${BUSES.length} schedules</span></div>
+      </div>
+      <div class="about-info-card">
+        <div class="about-row"><span class="about-row-label">Developed by</span><span class="about-row-val">_________</span></div>
+        <div class="about-row"><span class="about-row-label">Contact</span><span class="about-row-val" style="color:var(--blue)">bustimingmntvdy@gmail.com</span></div>
+      </div>
+      <button class="contact-btn">Contact Us</button>
+      <div style="text-align:center;font-size:12px;color:var(--gray-400);margin-top:16px">If you find any incorrect timings, please inform us.</div>
+    </div>
+  `;
+}
+
+nav('home');
+</script>
+<script>
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js")
+    .then(() => console.log("PWA Ready"))
+    .catch(err => console.log(err));
+}
+</script>
+</body>
+</html>
