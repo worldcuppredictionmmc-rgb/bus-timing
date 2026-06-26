@@ -118,6 +118,20 @@
   .route-color-1{color:#16A34A}
   .route-color-2{color:#7C3AED}
   .route-color-3{color:#EA580C}
+  .install-btn{
+  margin:0 20px 12px;
+  width:calc(100% - 40px);
+  padding:14px;
+  background:#2563EB;
+  color:#fff;
+  border:none;
+  border-radius:16px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  display:none;
+  box-shadow:0 4px 16px rgba(37,99,235,.25);
+}
   .app {
   max-width: auto;
   width: 100%;             /* Ensures responsiveness on smaller viewports */
@@ -318,6 +332,9 @@ function renderHome(){
         </div>
       </div>
     </div>`:''}
+    <button id="installBtn" class="install-btn">
+📲 Install App
+</button>
 
     <div class="section-label" style="margin-top:14px">Will I reach before college starts?</div>
     <div class="reach-card">
@@ -510,6 +527,24 @@ function renderAbout(){
 }
 
 nav('home');
+  let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const btn = document.getElementById("installBtn");
+  if(btn) btn.style.display = "block";
+});
+
+document.addEventListener("click", async (e) => {
+  if(e.target.id !== "installBtn") return;
+
+  if(!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+});
 </script>
 <script>
 
