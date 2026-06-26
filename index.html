@@ -156,6 +156,18 @@
   font-family: sans-serif;
   text-align: center;
   }
+  .install-header-btn{
+  background:#2563EB;
+  color:white;
+  border:none;
+  border-radius:10px;
+  padding:8px 12px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  display:none;
+  margin-left:auto;
+}
 
 </style>
 </head>
@@ -297,12 +309,17 @@ function renderHome(){
   document.getElementById('pg-home').innerHTML=`
     <div class="hdr">
       <div class="hdr-row">
-        <div class="hdr-icon">${busIcon('#fff')}</div>
-        <div>
-          <div class="hdr-title">College Bus Timings</div>
-          <div class="hdr-sub">Plan your journey, reach on time</div>
-        </div>
-      </div>
+  <div class="hdr-icon">${busIcon('#fff')}</div>
+
+  <div style="flex:1">
+    <div class="hdr-title">College Bus Timings</div>
+    <div class="hdr-sub">Plan your journey, reach on time</div>
+  </div>
+
+  <button id="installBtn" class="install-header-btn">
+    📲 Install
+  </button>
+</div>
     </div>
 
     <div class="section-label">Select Your Route</div>
@@ -332,9 +349,7 @@ function renderHome(){
         </div>
       </div>
     </div>`:''}
-    <button id="installBtn" class="install-btn">
-📲 Install App
-</button>
+  
 
     <div class="section-label" style="margin-top:14px">Will I reach before college starts?</div>
     <div class="reach-card">
